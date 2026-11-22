@@ -58,7 +58,10 @@ def driver():
             # The capture waveform sits near the bottom of the 600x600 editor
             title = b["Height"] - 600
             sx, sy = b["X"] + 200, b["Y"] + title + 547
-            dx, dy = 150, 150  # empty Desktop area, top-left of the screen
+            # Drop on an empty Desktop spot in the bottom-right corner, well clear of the window
+            screen = Quartz.CGDisplayBounds(Quartz.CGMainDisplayID())
+            dx, dy = screen.size.width - 160, screen.size.height - 160
+            print(f"screen {screen.size.width:.0f}x{screen.size.height:.0f}, dragging from ({sx}, {sy}) to ({dx}, {dy})")
             post(Quartz.kCGEventMouseMoved, sx, sy)
             time.sleep(0.5)
             post(Quartz.kCGEventLeftMouseDown, sx, sy)

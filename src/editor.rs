@@ -572,7 +572,12 @@ fn capture_strip(ui: &mut Ui, view: &mut CaptureView, now: f64) {
                     if response.drag_started() {
                         match view.ensure_saved() {
                             Ok(path) => {
-                                if let Err(err) = export::start_drag(&path) {
+                                let started = export::start_drag(&path);
+                                match &started {
+                                    Ok(()) => nih_log!("Dragging {}", path.display()),
+                                    Err(err) => nih_log!("Couldn't start drag: {err}"),
+                                }
+                                if let Err(err) = started {
                                     let name = path
                                         .file_name()
                                         .map(|n| n.to_string_lossy().to_string())
