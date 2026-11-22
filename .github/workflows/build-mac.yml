@@ -59,9 +59,27 @@ jobs:
           pip install pedalboard numpy pyobjc-framework-Quartz
           python ci/host_test.py "target/bundled/Reverse Swell.vst3"
 
+      # GitHub's Macs are VMs without a GPU, so hardware-accelerated OpenGL (which the real
+      # plugin asks for, and every real Mac has) isn't available. For the GUI test only, build a
+      # throwaway copy that accepts Apple's software renderer. The shipped plugin is untouched.
+      - name: Build test-only copy with software OpenGL
+        run: |
+          F=$(ls -d ~/.cargo/git/checkouts/baseview-*/9a0b42c/src/gl/macos.rs)
+          cp "$F" /tmp/macos.rs.orig
+          sed -i '' '/NSOpenGLPFAAccelerated as u32,/d' "$F"
+          CARGO_TARGET_DIR=/tmp/guitest cargo build --release --lib --features objc-exception-guard || STATUS=$?
+          cp /tmp/macos.rs.orig "$F"
+          [ -z "$STATUS" ] || exit $STATUS
+          mkdir -p /tmp/gui
+          cp -R "target/bundled/Reverse Swell.vst3" /tmp/gui/
+          cp /tmp/guitest/release/libreverse_swell.dylib "/tmp/gui/Reverse Swell.vst3/Contents/MacOS/Reverse Swell"
+          codesign -f -s - "/tmp/gui/Reverse Swell.vst3"
+
       - name: GUI and drag-out test
         continue-on-error: true
-        run: python ci/mac_gui_test.py "target/bundled/Reverse Swell.vst3" screenshots
+        run: |
+          mkdir -p screenshots
+          python ci/mac_gui_test.py "/tmp/gui/Reverse Swell.vst3" screenshots
 
       - name: Package
         run: |
