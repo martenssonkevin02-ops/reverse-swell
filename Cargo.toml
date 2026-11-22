@@ -1,0 +1,44 @@
+[workspace]
+members = ["xtask"]
+
+[package]
+name = "reverse_swell"
+version = "1.1.0"
+edition = "2021"
+description = "Reverse reverb that swells into the first hit of a sound"
+license = "GPL-3.0-or-later"
+
+[features]
+# Catch Objective-C exceptions around the macOS drag code (needs Apple's SDK to build)
+objc-exception-guard = ["objc2/exception"]
+# Only for testing the GUI as a standalone app
+standalone = ["nih_plug/standalone"]
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "de421011f41a6d10fc8c7a6084e4f4dee0143683", features = ["assert_process_allocs"] }
+nih_plug_egui = { git = "https://github.com/robbert-vdh/nih-plug.git", rev = "de421011f41a6d10fc8c7a6084e4f4dee0143683" }
+realfft = "3"
+crossbeam-queue = "0.3"
+atomic_float = "1"
+parking_lot = "0.12"
+hound = "3"
+
+[dev-dependencies]
+
+[profile.release]
+lto = "thin"
+strip = "symbols"
+codegen-units = 1
+panic = "abort"
+
+[[example]]
+name = "standalone"
+required-features = ["standalone"]
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-foundation = "0.3"
+objc2-app-kit = "0.3"
