@@ -6,17 +6,22 @@ VST3 effect, Apple Silicon and Intel
 INSTALL
 -------------------------------------------------------------------
 1. Unzip "Reverse Swell.vst3.zip" (double-click it).
-2. In Finder press Cmd+Shift+G, paste this and press Enter:
-      ~/Library/Audio/Plug-Ins/VST3
-3. Drag "Reverse Swell.vst3" into that folder.
-4. The plugin isn't from the App Store or a paid Apple developer
-   account, so macOS blocks it until you allow it. Open Terminal
-   (Cmd+Space, type Terminal) and paste this line, then press Enter:
+2. FL Studio on Mac only scans the system plugin folder, not the one in
+   your user Library. Open Terminal (Cmd+Space, type Terminal), paste
+   this line and press Enter. It asks for your Mac password (nothing
+   shows while you type, that's normal):
 
-      xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/VST3/Reverse\ Swell.vst3
+      sudo mkdir -p /Library/Audio/Plug-Ins/VST3 && sudo cp -R ~/Downloads/Reverse\ Swell.vst3 /Library/Audio/Plug-Ins/VST3/ && sudo xattr -dr com.apple.quarantine /Library/Audio/Plug-Ins/VST3/Reverse\ Swell.vst3
 
-5. In FL Studio: Options > Manage plugins > Find plugins.
-   It shows up as "Reverse Swell" (vendor: Second Generation).
+   (This assumes the unzipped "Reverse Swell.vst3" is in Downloads.
+   It also unblocks it: the plugin isn't from the App Store or a paid
+   Apple developer account, so macOS blocks it by default.)
+
+3. In FL Studio: Options > Manage plugins. Tick "Verify plugins" and
+   "Rescan previously verified plugins", then click "Find installed
+   plugins". Search for "Reverse" in the list and click its star so it
+   shows up in the plugin menus. It's an effect: load it in a Mixer
+   slot, not in the Channel rack.
 
 -------------------------------------------------------------------
 RENDER A SWELL TO AUDIO
